@@ -1,9 +1,10 @@
 // Canvas Asteroids
+//
 // Copyright (c) 2010 Doug McInnes
 //
 
 KEY_CODES = {
-  13: 'enter',
+  32: 'space',
   37: 'left',
   38: 'up',
   39: 'right',
@@ -410,88 +411,7 @@ Ship = function () {
     if (this.bulletCounter > 0) {
       this.bulletCounter -= delta;
     }
-    if (KEY_STATUS.enter) {
-      if (this.bulletCounter <= 0) {
-        this.bulletCounter = 10;
-        for (var i = 0; i < this.bullets.length; i++) {
-          if (!this.bullets[i].visible) {
-            SFX.laser().play();
-            var bullet = this.bullets[i];
-            var rad = ((this.rot-90) * Math.PI)/180;
-            var vectorx = Math.cos(rad);
-            var vectory = Math.sin(rad);
-            // move to the nose of the ship
-            bullet.x = this.x + vectorx * 4;
-            bullet.y = this.y + vectory * 4;
-            bullet.vel.x = 6 * vectorx + this.vel.x;
-            bullet.vel.y = 6 * vectory + this.vel.y;
-            bullet.visible = true;
-            break;
-          }
-        }
-      }
-    }
-
-    // limit the ship's speed
-    if (Math.sqrt(this.vel.x * this.vel.x + this.vel.y * this.vel.y) > 8) {
-      this.vel.x *= 0.95;
-      this.vel.y *= 0.95;
-    }
-  };
-
-  this.collision = function (other) {
-    SFX.explosion().play();
-    Game.explosionAt(other.x, other.y);
-    Game.FSM.state = 'player_died';
-    this.visible = false;
-    this.currentNode.leave(this);
-    this.currentNode = null;
-    Game.lives--;
-  };
-
-};
-Ship = function () {
-  this.init("ship",
-            [-5,   4,
-              0, -12,
-              5,   4]);
-
-  this.children.exhaust = new Sprite();
-  this.children.exhaust.init("exhaust",
-                             [-3,  6,
-                               0, 11,
-                               3,  6]);
-
-  this.bulletCounter = 0;
-
-  this.postMove = this.wrapPostMove;
-
-  this.collidesWith = ["asteroid", "bigalien", "alienbullet"];
-
-  this.preMove = function (delta) {
-    if (KEY_STATUS.left) {
-      this.vel.rot = -6;
-    } else if (KEY_STATUS.right) {
-      this.vel.rot = 6;
-    } else {
-      this.vel.rot = 0;
-    }
-
-    if (KEY_STATUS.up) {
-      var rad = ((this.rot-90) * Math.PI)/180;
-      this.acc.x = 0.5 * Math.cos(rad);
-      this.acc.y = 0.5 * Math.sin(rad);
-      this.children.exhaust.visible = Math.random() > 0.1;
-    } else {
-      this.acc.x = 0;
-      this.acc.y = 0;
-      this.children.exhaust.visible = false;
-    }
-
-    if (this.bulletCounter > 0) {
-      this.bulletCounter -= delta;
-    }
-    if (KEY_STATUS.enter) {
+    if (KEY_STATUS.space) {
       if (this.bulletCounter <= 0) {
         this.bulletCounter = 10;
         for (var i = 0; i < this.bullets.length; i++) {
@@ -532,31 +452,32 @@ Ship = function () {
 
 };
 Ship.prototype = new Sprite();
+
 BigAlien = function () {
   this.init("bigalien",
-            [-20,   0,
-             -12,  -4,
-              12,  -4,
-              20,   0,
-              12,   4,
-             -12,   4,
-             -20,   0,
-              20,   0]);
+      [-20,   0,
+        -12,  -4,
+        12,  -4,
+        20,   0,
+        12,   4,
+        -12,   4,
+        -20,   0,
+        20,   0]);
 
   this.children.top = new Sprite();
   this.children.top.init("bigalien_top",
-                         [-8, -4,
-                          -6, -6,
-                           6, -6,
-                           8, -4]);
+      [-8, -4,
+        -6, -6,
+        6, -6,
+        8, -4]);
   this.children.top.visible = true;
 
   this.children.bottom = new Sprite();
   this.children.bottom.init("bigalien_top",
-                            [ 8, 4,
-                              6, 6,
-                             -6, 6,
-                             -8, 4]);
+      [ 8, 4,
+        6, 6,
+        -6, 6,
+        -8, 4]);
   this.children.bottom.visible = true;
 
   this.collidesWith = ["asteroid", "ship", "bullet"];
@@ -721,16 +642,16 @@ AlienBullet.prototype = new Bullet();
 
 Asteroid = function () {
   this.init("asteroid",
-            [-10,   0,
-              -5,   7,
-              -3,   4,
-               1,  10,
-               5,   4,
-              10,   0,
-               5,  -6,
-               2, -10,
-              -4, -10,
-              -4,  -5]);
+      [-10,   0,
+        -5,   7,
+        -3,   4,
+        1,  10,
+        5,   4,
+        10,   0,
+        5,  -6,
+        2, -10,
+        -4, -10,
+        -4,  -5]);
 
   this.visible = true;
   this.scale = 6;
@@ -1001,9 +922,9 @@ Game = {
       this.state = 'waiting';
     },
     waiting: function () {
-      Text.renderText(window.ipad ? 'Touch Screen to Start' : 'Press Enter to Start', 36, Game.canvasWidth/2 - 270, Game.canvasHeight/2);
-      if (KEY_STATUS.enter || window.gameStart) {
-        KEY_STATUS.enter = false; // hack so we don't shoot right away
+      Text.renderText(window.ipad ? 'Touch Screen to Start' : 'Press Space to Start', 36, Game.canvasWidth/2 - 270, Game.canvasHeight/2);
+      if (KEY_STATUS.space || window.gameStart) {
+        KEY_STATUS.space = false; // hack so we don't shoot right away
         window.gameStart = false;
         this.state = 'start';
       }
@@ -1013,7 +934,7 @@ Game = {
         if (Game.sprites[i].name == 'asteroid') {
           Game.sprites[i].die();
         } else if (Game.sprites[i].name == 'bullet' ||
-                   Game.sprites[i].name == 'bigalien') {
+            Game.sprites[i].name == 'bigalien') {
           Game.sprites[i].visible = false;
         }
       }
@@ -1199,13 +1120,13 @@ $(function () {
   // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
   window.requestAnimFrame = (function () {
     return  window.requestAnimationFrame       ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            window.oRequestAnimationFrame      ||
-            window.msRequestAnimationFrame     ||
-            function (/* function */ callback, /* DOMElement */ element) {
-              window.setTimeout(callback, 1000 / 60);
-            };
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        window.oRequestAnimationFrame      ||
+        window.msRequestAnimationFrame     ||
+        function (/* function */ callback, /* DOMElement */ element) {
+          window.setTimeout(callback, 1000 / 60);
+        };
   })();
 
   var mainLoop = function () {
