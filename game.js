@@ -3,7 +3,7 @@
 //
 
 KEY_CODES = {
-  32: 'space',
+  13: 'enter',
   37: 'left',
   38: 'up',
   39: 'right',
@@ -410,7 +410,7 @@ Ship = function () {
     if (this.bulletCounter > 0) {
       this.bulletCounter -= delta;
     }
-    if (KEY_STATUS.space) {
+    if (KEY_STATUS.enter) {
       if (this.bulletCounter <= 0) {
         this.bulletCounter = 10;
         for (var i = 0; i < this.bullets.length; i++) {
@@ -491,7 +491,7 @@ Ship = function () {
     if (this.bulletCounter > 0) {
       this.bulletCounter -= delta;
     }
-    if (KEY_STATUS.space) {
+    if (KEY_STATUS.enter) {
       if (this.bulletCounter <= 0) {
         this.bulletCounter = 10;
         for (var i = 0; i < this.bullets.length; i++) {
@@ -1001,9 +1001,9 @@ Game = {
       this.state = 'waiting';
     },
     waiting: function () {
-      Text.renderText(window.ipad ? 'Touch Screen to Start' : 'Press Space to Start', 36, Game.canvasWidth/2 - 270, Game.canvasHeight/2);
-      if (KEY_STATUS.space || window.gameStart) {
-        KEY_STATUS.space = false; // hack so we don't shoot right away
+      Text.renderText(window.ipad ? 'Touch Screen to Start' : 'Press Enter to Start', 36, Game.canvasWidth/2 - 270, Game.canvasHeight/2);
+      if (KEY_STATUS.enter || window.gameStart) {
+        KEY_STATUS.enter = false; // hack so we don't shoot right away
         window.gameStart = false;
         this.state = 'start';
       }
